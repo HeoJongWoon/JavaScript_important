@@ -5,34 +5,33 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Callback을 통한 동기화 처리 (ES5)</title>
+  <title>then구문을 동기적으로 연속 호출할때</title>
 </head>
 
 <body>
   <script>
-    function test(delay, callback) {
-      setTimeout(() => {
-        callback();
-      }, delay)
-    }
-    //동기적으로 실행할 모든 코드들을 콜백함수 형태로 인수로 전달함으로써
-    //스크립트 엔진으로 하여금 다음에 (비동기적으로) 처리할 업무를 물리적으로 제거
-    //web api 특정 업무를 수행할때까지 강제로 동기화
-    //기존 콜백함수를 통한 동기화의 문제점은  다음의 실행할 코드들의 함수의 인수형태로 계속 뎁스가 추가되면서 코드가독성이 떨어지고 개발의 복잡도 증가
-    //콜백지옥 (callback hell)
+    const delayFunc = (delayTime = 2000, cond = true) => {
+      return new Promise((resolve, reject) => {
+        console.log('pending...');
 
-    console.log('start');
-
-    test(2000, () => {
-      console.log('callback1');
-
-      test(2000, () => {
-        console.log('callback2');
-
-        test(2000, () => {
-          console.log('callback3');
-          console.log('end')
-        })
+        setTimeout(() => {
+          cond ? resolve('정상실행') : reject('예외처리');
+        }, delayTime)
       })
-    })
+    }
+
+    delayFunc(3000)
+      .then(val => {
+        console.log(val);
+        //내부에서 생성된 promise객체를 다시 리턴해서 
+        //다음 then에서 동기적으로 코드가 실행됨
+        return delayFunc(4000, false);
+      })
+      .then(() => {
+        console.log('두번째 동기화 코드');
+      })
+      .catch(err => {
+        console.log(err);
+      })
+
   </script>
