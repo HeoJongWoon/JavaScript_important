@@ -5,37 +5,34 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>자바스크립트가 비동기적으로 동작하는 이유</title>
+  <title>Callback을 통한 동기화 처리 (ES5)</title>
 </head>
 
 <body>
   <script>
-    const test = (delay, callback) => setTimeout(() => callback(), delay);
+    function test(delay, callback) {
+      setTimeout(() => {
+        callback();
+      }, delay)
+    }
+    //동기적으로 실행할 모든 코드들을 콜백함수 형태로 인수로 전달함으로써
+    //스크립트 엔진으로 하여금 다음에 (비동기적으로) 처리할 업무를 물리적으로 제거
+    //web api 특정 업무를 수행할때까지 강제로 동기화
+    //기존 콜백함수를 통한 동기화의 문제점은  다음의 실행할 코드들의 함수의 인수형태로 계속 뎁스가 추가되면서 코드가독성이 떨어지고 개발의 복잡도 증가
+    //콜백지옥 (callback hell)
 
-    //순서1 - start콘솔문 실행 (js)
     console.log('start');
 
-    //순서2 - test함수 호출, setTimeout구문 wep api에 전달 (js)
-    test(0, () => {
-      //순서6 - setTimeout처리하고 그안쪽에 callback1 콘솔문 js에 전달 (web api)
+    test(2000, () => {
       console.log('callback1');
-    })
 
-    //순서3 - test함수 호출, setTimeout구문 wep api에 전달 (js)
-    test(0, () => {
-      //순서7 - setTimeout처리하고 그안쪽에 callback1 콘솔문 js에 전달 (web api)
-      console.log('callback2');
-    })
+      test(2000, () => {
+        console.log('callback2');
 
-    //순서4 - test함수 호출, setTimeout구문 wep api에 전달 (js)
-    test(0, () => {
-      //순서8 - setTimeout처리하고 그안쪽에 callback1 콘솔문 js에 전달 (web api)
-      console.log('callback3');
+        test(2000, () => {
+          console.log('callback3');
+          console.log('end')
+        })
+      })
     })
-
-    //순서5 - end 콘솔문 실행
-    console.log('end');
   </script>
-</body>
-
-</html>
