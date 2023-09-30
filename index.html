@@ -5,33 +5,31 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>then구문을 동기적으로 연속 호출할때</title>
+  <title>복수개의 Promise객체를 동기화 처리</title>
 </head>
 
 <body>
   <script>
-    const delayFunc = (delayTime = 2000, cond = true) => {
-      return new Promise((resolve, reject) => {
-        console.log('pending...');
-
+    //이미지소스 로딩완료 체크 함수
+    const getImgs = boolean => {
+      return new Promise((res, rej) => {
         setTimeout(() => {
-          cond ? resolve('정상실행') : reject('예외처리');
-        }, delayTime)
+          boolean ? res('img loaded') : rej('img fail');
+        }, 2000);
       })
     }
 
-    delayFunc(3000)
-      .then(val => {
-        console.log(val);
-        //내부에서 생성된 promise객체를 다시 리턴해서 
-        //다음 then에서 동기적으로 코드가 실행됨
-        return delayFunc(4000, false);
-      })
-      .then(() => {
-        console.log('두번째 동기화 코드');
-      })
-      .catch(err => {
-        console.log(err);
-      })
+    //영상소스 로딩완료 체크 함수
+    const getVids = boolean => new Promise((res, rej) => setTimeout(() => boolean ? res('vid loaded') : rej('vid fail'), 2000));
+
+    //Promise.all은 인수로 전달되는 모든 값이 프로미스 객체에서 resolve 반환해야 then이 실행 그렇지 않으면 catch문   
+    //const loadedSrc = Promise.all([getImgs(true), getVids(false)])
+
+    //Promise.race는 인수로 전달되는 값이 하나라도 프로미스 객체에서 resolve를 반환하면 then이 실행되고 모두 reject를 반환해야 catch실행
+    const loadedSrc = Promise.race([getImgs(false), getVids(false)]);
+    loadedSrc
+      .then(val => console.log('로딩완료', val))
+      .catch(err => console.log('로딩실패', err))
+      .finally(() => console.log('complete'))
 
   </script>
