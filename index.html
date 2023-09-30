@@ -5,44 +5,29 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>async await</title>
+  <title>try catch 예외처리</title>
 </head>
 
 <body>
   <script>
-    function delay(time) {
-      return new Promise((resolve) => {
+    function delay(time = 2000, cond = true) {
+      return new Promise((resolve, reject) => {
         setTimeout(() => {
-          resolve();
+          cond ? resolve('success') : reject('fail');
         }, time);
       });
     }
-    /*
-      기존 promise객체를 리턴하는 함수뒤에 then문으로 동기화처리 하던 구문을 간편하게 처리하기 위한 async await
-    
-      사용방법
-      - 프로미스 객체를 반환하는 함수를 다시 wrapping함수로 패키징
-      - 해당 wrapping 함수에 async 지정
-      - wrapping함수 안쪽의 promise객체를 반환하는 함수 앞쪽에 await지정
-      - await로 지정된 함수가 끝날때까지 그 다음 함수는 동기화
-    */
 
-    /*
-    delay(3000).then(() => {
-      console.log('test');
-    });
-    */
-
-    /*
-    async function test() {
-      await delay(3000);
-      console.log('test');
-    }
-    */
-
+    //async await에서는 then구문을 await가 대체하므로 catch문 사용이 불가하므로
+    //내부적으로 try catch문으로 해결
     const test = async () => {
-      await delay(3000);
-      console.log('test');
+      try {
+        const result = await delay(3000, false);
+        console.log(result);
+      } catch (err) {
+        console.log(err);
+      }
+
     };
 
     test();
