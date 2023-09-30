@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>자바스크립트가 비동기적으로 동작하는 이유</title>
+</head>
+
+<body>
+  <script>
+    const test = (delay, callback) => setTimeout(() => callback(), delay);
+
+    //순서1 - start콘솔문 실행 (js)
+    console.log('start');
+
+    //순서2 - test함수 호출, setTimeout구문 wep api에 전달 (js)
+    test(0, () => {
+      //순서6 - setTimeout처리하고 그안쪽에 callback1 콘솔문 js에 전달 (web api)
+      console.log('callback1');
+    })
+
+    //순서3 - test함수 호출, setTimeout구문 wep api에 전달 (js)
+    test(0, () => {
+      //순서7 - setTimeout처리하고 그안쪽에 callback1 콘솔문 js에 전달 (web api)
+      console.log('callback2');
+    })
+
+    //순서4 - test함수 호출, setTimeout구문 wep api에 전달 (js)
+    test(0, () => {
+      //순서8 - setTimeout처리하고 그안쪽에 callback1 콘솔문 js에 전달 (web api)
+      console.log('callback3');
+    })
+
+    //순서5 - end 콘솔문 실행
+    console.log('end');
+  </script>
+</body>
+
+</html>
